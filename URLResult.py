@@ -12,8 +12,6 @@ class URLResult(object):
 
     def show(self):
         print("")
-        if self.broken_urls != {}:
-            print("BROKEN URLs: ")
         for i in self.broken_urls:
             print("Found " + str(len(self.broken_urls[i])) + " broken urls on page " + str(i) + ":")
             for j in self.broken_urls[i]:

@@ -1,5 +1,6 @@
 import requests
 import bs4 as bs
+import re
 from CrawlingAndValidating import URLResult, Validator
 
 
@@ -67,7 +68,6 @@ class Crawler(object):
         self.validator.validate(response.text, url)
 
         links = content.find_all('a')
-        # print("CRAWLING: " + str(url) + " with level " + str(level))
         for l in links:
             child_url = self.create_and_check_url(l.get('href'))
             if l.get('title') is None:
@@ -92,9 +92,10 @@ if __name__ == "__main__":
     quotes = "http://quotes.toscrape.com/"
     moja = "https://koalabzium.github.io/test_page/"
     github = "https://github.com/koalabzium"
+
     response = requests.get(moja)
     content = bs.BeautifulSoup(response.text, 'html5lib')
-    print(content.find_all('h1'))
+    # print(content.find_all('h1'))
     # for i in content.find_all('meta'):
     #     if i.get('name') == "description":
     #         print(i.get("content"))
@@ -104,7 +105,7 @@ if __name__ == "__main__":
     #     child_url = l.get('title')
     #     print(child_url)
 
-    # crawler = Crawler(moja, 1)
-    # crawler.start()
-    # crawler.result.show()
-    # crawler.validator.result.show()
+    crawler = Crawler(moja, 1)
+    crawler.start()
+    crawler.result.show()
+    crawler.validator.result.show()

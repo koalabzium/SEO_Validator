@@ -8,6 +8,8 @@ class ValidationResult(object):
         self.description_wrong_size = []
         self.title_wrong_chars = []
         self.heading_too_many = {}
+        self.heading_missing = []
+        self.heading_structure = []
 
     def title_results(self):
         print("")
@@ -33,7 +35,6 @@ class ValidationResult(object):
         for i in self.title_wrong_chars:
             print(" ------> " + str(i))
 
-
     def description_results(self):
         print("")
         print("Found " + str(len(self.description_missing)) + " pages with missing description: ")
@@ -53,6 +54,26 @@ class ValidationResult(object):
         for i in self.description_wrong_size:
             print(" ------> " + str(i))
 
+    def headings_results(self):
+        print("")
+        print("Found " + str(len(self.heading_missing)) + " pages without h1 heading: ")
+        for i in self.heading_missing:
+            print(" ------> " + str(i))
+
+        print("")
+        for i in self.heading_too_many:
+            print("On page " + str(i) + " found too many h1 headings:")
+            for j in self.heading_too_many[i]:
+                print("     " + str(j))
+
+        print("")
+        print("Found " + str(len(self.heading_structure)) + " pages with wrong structure of headings:")
+        for i in self.heading_structure:
+            print(i)
+
+
+
     def show(self):
         self.title_results()
         self.description_results()
+        self.headings_results()

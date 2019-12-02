@@ -1,5 +1,6 @@
 import bs4 as bs
 from CrawlingAndValidating import ValidationResult
+import re
 
 
 class Validator(object):
@@ -44,14 +45,21 @@ class Validator(object):
 
     def heading_validation(self, content, url):
         h1 = content.find_all('h1')
-
-        if len(h1) > 1:
+        if len(h1) == 0:
+            self.result.heading_missing.append(url)
+        elif len(h1) > 1:
             self.result.heading_too_many[url] = h1
 
-
-
+        headings = content.find_all(re.compile('^h[1-6]$'))
+        level = 1
+        for i in headings:
+            if level < int(i.name[1]):
+                self.result.heading_structure.append(url)
+                break
+            level = int(i.name[1]) + 1
 
     def validate(self, response_text, url):
         content = bs.BeautifulSoup(response_text, 'html5lib')
         self.title_validation(content, url)
         self.description_validation(content, url)
+        self.heading_validation(content,url)
