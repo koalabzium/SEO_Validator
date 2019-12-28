@@ -1,6 +1,7 @@
 import requests
 import bs4 as bs
 import re
+import json
 from CrawlingAndValidating import URLResult, Validator
 
 
@@ -89,6 +90,7 @@ class Crawler(object):
         self.check_robots()
         self.check_sitemap()
         self.check_speed()
+        return self.result.create_result()
 
     def check_robots(self):
         robots = self.starting_url + "/robots.txt"
@@ -120,7 +122,6 @@ if __name__ == "__main__":
     github = "https://github.com/koalabzium"
     line = "https://www.viviclabs.com/"
     # irenki = "https://healthyomnomnom.shoplo.com/producent/healthy-omnomnom" ---- nie działa, ogarnij kiedyśtam why
-    key = "AIzaSyDDPIaOVFcDv38JsJM-Bgees-J1RX5DpQ8"
     # response = requests.get(moja)
     # content = bs.BeautifulSoup(response.text, 'html5lib')
 

@@ -1,3 +1,5 @@
+import json
+
 class URLResult(object):
 
     def __init__(self):
@@ -9,6 +11,12 @@ class URLResult(object):
         self.http_urls = []
         self.urls_missing_title = []
         self.urls_wrong_chars = []
+
+    def create_result(self):
+        result = {'broken-urls': self.broken_urls, 'inbound-urls-count': self.inbound_counter, 'outbound-urls-count': self.outbound_counter,
+                  'urls-count': self.url_counter, '302-response-count': self.urls_302, 'unsafe-urls': self.http_urls, 'with-missing-title': self.urls_missing_title,
+                  'with-wrong-chars': self.urls_wrong_chars}
+        return result
 
     def show(self):
         print("")
@@ -52,3 +60,4 @@ class URLResult(object):
         print("Found " + str(len(self.urls_wrong_chars)) + " urls with not recommended characters (\"_\", \" \" or uppercase): ")
         for i in self.urls_wrong_chars:
             print(" ------> " + str(i))
+
