@@ -86,26 +86,46 @@ class Crawler(object):
 
     def start(self):
         self.crawl(self.starting_url, 0, "")
+        self.check_robots()
+        self.check_sitemap()
+        self.check_speed()
 
+    def check_robots(self):
+        robots = self.starting_url + "/robots.txt"
+        response = requests.get(robots)
+        if response.status_code == 404:
+            self.validator.result.missing_robots = True
+
+    def check_sitemap(self):
+        sitemap = self.starting_url + "/sitemap.xml"
+        response = requests.get(sitemap)
+        if response.status_code == 404:
+            self.validator.result.missing_sitemap = True
+
+    def check_speed(self):
+        x = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=" + str(self.starting_url)
+        r = requests.get(x)
+        final = r.json()
+        try:
+            time_to_first_byte = final['lighthouseResult']['audits']['time-to-first-byte']['numericValue']
+            fct = final['lighthouseResult']['audits']['first-contentful-paint']['numericValue']
+            self.validator.result.time_to_first_byte = time_to_first_byte
+            self.validator.result.fct = fct
+        except KeyError:
+            print("Unable to get site speed")
 
 if __name__ == "__main__":
     quotes = "http://quotes.toscrape.com/"
     moja = "https://koalabzium.github.io/test_page/"
     github = "https://github.com/koalabzium"
+    line = "https://www.viviclabs.com/"
+    # irenki = "https://healthyomnomnom.shoplo.com/producent/healthy-omnomnom" ---- nie działa, ogarnij kiedyśtam why
+    key = "AIzaSyDDPIaOVFcDv38JsJM-Bgees-J1RX5DpQ8"
+    # response = requests.get(moja)
+    # content = bs.BeautifulSoup(response.text, 'html5lib')
 
-    response = requests.get(moja)
-    content = bs.BeautifulSoup(response.text, 'html5lib')
-    # print(content.find_all('h1'))
-    # for i in content.find_all('meta'):
-    #     if i.get('name') == "description":
-    #         print(i.get("content"))
-    # print()
-    # links = content.find_all('a')
-    # for l in links:
-    #     child_url = l.get('title')
-    #     print(child_url)
 
-    crawler = Crawler(moja, 1)
+    crawler = Crawler(moja, 0)
     crawler.start()
     crawler.result.show()
     crawler.validator.result.show()

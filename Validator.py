@@ -1,7 +1,7 @@
 import bs4 as bs
 from CrawlingAndValidating import ValidationResult
 import re
-
+import requests
 
 class Validator(object):
 
@@ -58,8 +58,45 @@ class Validator(object):
                 break
             level = int(i.name[1]) + 1
 
+    def content_length(self, content, url):
+        length = len(content.get_text())
+        if length < 1500:
+            self.result.little_content[url] = length
+
+    def alt_text(self, content, url):
+        for i in content.find_all('img'):
+            if i.get('alt') is None or len(i.get('alt')) == 0:
+                if url in self.result.alt_text_missing:
+                    self.result.alt_text_missing[url] += 1
+                else:
+                    self.result.alt_text_missing[url] = 1
+
+    def open_graph(self, content, url):
+        open_graph = False
+        og_title = False
+        og_image = False
+        og_type = False
+        og_url = False
+        for i in content.find_all('meta'):
+            if re.match('og:title', str(i.get('property'))):
+                og_title = True
+            elif re.match('og:url', str(i.get('property'))):
+                og_url = True
+            elif re.match('og:image', str(i.get('property'))):
+                og_image = True
+            elif re.match('og:type', str(i.get('property'))):
+                og_type = True
+        if og_image and og_title and og_type and og_url:
+            open_graph = True
+        if not open_graph:
+            self.result.no_open_graph.append(url)
+
+
     def validate(self, response_text, url):
         content = bs.BeautifulSoup(response_text, 'html5lib')
         self.title_validation(content, url)
         self.description_validation(content, url)
         self.heading_validation(content,url)
+        self.content_length(content, url)
+        self.alt_text(content, url)
+        self.open_graph(content, url)
