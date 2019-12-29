@@ -1,4 +1,3 @@
-from CrawlingAndValidating.Result import Result
 from CrawlingAndValidating.Validator import Validator
 
 
@@ -10,6 +9,12 @@ class ContentValidator(Validator):
 
     def validate(self):
         self.check_links()
+        self.check_content_length()
+
+    def check_content_length(self):
+        length = len(self.content.get_text())
+        if length < 1500:
+            self.result.little_content[self.url] = length
 
     def check_urls_amount(self, inbound, outbound):
         if inbound >= 8:

@@ -1,8 +1,5 @@
 import requests
 import bs4 as bs
-import re
-import json
-from CrawlingAndValidating import URLResult, ValidatorOld
 from CrawlingAndValidating.ValidationFacade import ValidationFacade
 from CrawlingAndValidating.Result import Result
 
@@ -19,7 +16,6 @@ class Crawler(object):
         self.starting_url = create_starting_url(starting_url)
         self.visited = set()
         self.max_level = level
-        self.validatorOld = ValidatorOld.ValidatorOld()
 
     def create_child_url(self, url):
         if url.startswith('/'):
@@ -53,6 +49,8 @@ class Crawler(object):
 
     def crawl(self, url, level, prev):
         response = requests.get(url)
+        if url == self.starting_url:
+            self.starting_url = response.url
         url = response.url
         self.visited.add(url)
         if not self.proper_status_code(response.status_code, prev, url):
@@ -61,45 +59,15 @@ class Crawler(object):
         validator = ValidationFacade(content, url, self.starting_url, self.result)
         validator.validate()
 
-        # self.validatorOld.validate(response.text, url)
-
         links = content.find_all('a')
-        for l in links:
-            child_url = self.create_child_url(l.get('href'))
+        for link in links:
+            child_url = self.create_child_url(link.get('href'))
             if child_url and child_url not in self.visited and level < self.max_level:
                 self.crawl(child_url, level + 1, url)
 
     def start(self):
         self.crawl(self.starting_url, 0, "")
-        self.check_robots()
-        self.check_sitemap()
-        # self.check_speed()
-        # return self.result.create_result()
-
-    def check_robots(self):
-        robots = self.starting_url + "/robots.txt"
-        response = requests.get(robots)
-        if response.status_code == 404:
-            self.validatorOld.result.missing_robots = True
-
-    def check_sitemap(self):
-        sitemap = self.starting_url + "/sitemap.xml"
-        response = requests.get(sitemap)
-        if response.status_code == 404:
-            self.validatorOld.result.missing_sitemap = True
-
-    def check_speed(self):
-        x = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=" + str(self.starting_url)
-        r = requests.get(x)
-        final = r.json()
-        try:
-            time_to_first_byte = final['lighthouseResult']['audits']['time-to-first-byte']['numericValue']
-            fct = final['lighthouseResult']['audits']['first-contentful-paint']['numericValue']
-            self.validatorOld.result.time_to_first_byte = time_to_first_byte
-            self.validatorOld.result.fct = fct
-        except KeyError:
-            print("Unable to get site speed")
-
+        self.result.show()
 
 if __name__ == "__main__":
     quotes = "http://quotes.toscrape.com/"
@@ -111,5 +79,5 @@ if __name__ == "__main__":
     # print(response.url)
     # content = bs.BeautifulSoup(response.text, 'html5lib')
 
-    crawler = Crawler(moja, 0)
+    crawler = Crawler(moja, 1)
     crawler.start()

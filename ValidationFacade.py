@@ -1,6 +1,13 @@
 from CrawlingAndValidating.URLValidator import URLValidator
 from CrawlingAndValidating.ContentValidator import ContentValidator
-from CrawlingAndValidating.Result import Result
+from CrawlingAndValidating.SpeedValidator import SpeedValidator
+from CrawlingAndValidating.SitemapValidator import SitemapValidator
+from CrawlingAndValidating.RobotsValidator import RobotsValidator
+from CrawlingAndValidating.TitleValidator import TitleValidator
+from CrawlingAndValidating.DescriptionValidator import DescriptionValidator
+from CrawlingAndValidating.HeadingValidator import HeadingValidator
+from CrawlingAndValidating.GraphicsValidator import GraphicsValidator
+from CrawlingAndValidating.OpenGraphValidator import OpenGraphValidator
 
 
 class ValidationFacade:
@@ -8,55 +15,27 @@ class ValidationFacade:
     def __init__(self, content, url, starting_url, result):
         self.url_validator = URLValidator(url, result)
         self.content_validator = ContentValidator(url, content, result)
+        self.speed_validator = SpeedValidator(starting_url, result)
+        self.sitemap_validator = SitemapValidator(starting_url, result)
+        self.robots_validator = RobotsValidator(starting_url, result)
+        self.title_validator = TitleValidator(url, content, result)
+        self.description_validator = DescriptionValidator(url, content, result)
+        self.heading_validator = HeadingValidator(url, content, result)
+        self.graphics_validator = GraphicsValidator(url, content, result)
+        self.open_graph_validator = OpenGraphValidator(url, content, result)
+        self.url = url
+        self.staring_url = starting_url
         self.result = result
 
     def validate(self):
         self.url_validator.validate()
         self.content_validator.validate()
-        self.show_result()
-
-    def create_result(self):
-        pass
-
-    def show_result(self):
-        print("")
-        for i in self.result.broken_urls:
-            print("Found " + str(len(self.result.broken_urls[i])) + " broken urls on page " + str(i) + ":")
-            for j in self.result.broken_urls[i]:
-                print(" ------> " + str(j))
-            print("")
-
-        if self.result.urls_302 != {}:
-            print("302 URLs: ")
-        for i in self.result.urls_302:
-            print(" On page " + str(i) + " those URLs return 302 status code. If it is possible change them for 301:")
-            for j in self.result.urls_302[i]:
-                print(" ------> " + str(j))
-            print("")
-
-
-        for i in self.result.url_counter:
-            print("On page " + str(i) + " too many(" + str(self.result.url_counter[i]) + ") links were found.")
-
-        print("")
-        for i in self.result.inbound_counter:
-            print("On page " + str(i) + " too many(" + str(self.result.inbound_counter[i]) + ") inbound links were found.")
-
-        print("")
-        for i in self.result.outbound_counter:
-            print("On page " + str(i) + " too many(" + str(self.result.outbound_counter[i]) + ") outbound links were found.")
-
-        print("")
-        print("Found " + str(len(self.result.http_urls)) + " not HTTPS urls:")
-        for i in self.result.http_urls:
-            print(" ------> " + str(i))
-
-        print("")
-        print("Found " + str(len(self.result.urls_missing_title)) + " <a> tags with missing title: ")
-        for i in self.result.urls_missing_title:
-            print(" ------> " + str(i))
-
-        print("")
-        print("Found " + str(len(self.result.urls_wrong_chars)) + " urls with not recommended characters (\"_\", \" \" or uppercase): ")
-        for i in self.result.urls_wrong_chars:
-            print(" ------> " + str(i))
+        self.title_validator.validate()
+        self.description_validator.validate()
+        self.heading_validator.validate()
+        self.graphics_validator.validate()
+        self.open_graph_validator.validate()
+        if self.url == self.staring_url:
+            # self.speed_validator.validate()
+            self.sitemap_validator.validate()
+            self.robots_validator.validate()
