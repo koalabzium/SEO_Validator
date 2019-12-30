@@ -11,11 +11,12 @@ def create_starting_url(starting_url):
 
 
 class Crawler(object):
-    def __init__(self, starting_url, level):
-        self.result = Result()
+    def __init__(self, starting_url, level, config):
+        self.result = Result(starting_url, level, config)
         self.starting_url = create_starting_url(starting_url)
         self.visited = set()
         self.max_level = level
+        self.config = config
 
     def create_child_url(self, url):
         if url.startswith('/'):
@@ -56,7 +57,7 @@ class Crawler(object):
         if not self.proper_status_code(response.status_code, prev, url):
             return
         content = bs.BeautifulSoup(response.text, 'html5lib')
-        validator = ValidationFacade(content, url, self.starting_url, self.result)
+        validator = ValidationFacade(content, url, self.starting_url, self.result, self.config)
         validator.validate()
 
         links = content.find_all('a')
@@ -67,7 +68,10 @@ class Crawler(object):
 
     def start(self):
         self.crawl(self.starting_url, 0, "")
-        self.result.show()
+        # print(self.result.create_report())
+
+        # self.result.show()
+        return self.result.create_report()
 
 if __name__ == "__main__":
     quotes = "http://quotes.toscrape.com/"

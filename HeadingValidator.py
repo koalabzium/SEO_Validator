@@ -17,7 +17,10 @@ class HeadingValidator(Validator):
         if len(h1) == 0:
             self.result.heading_missing.append(self.url)
         elif len(h1) > 1:
-            self.result.heading_too_many[self.url] = h1
+            headings1 = []
+            for h in h1:
+                headings1.append(h.get_text())
+            self.result.heading_too_many[self.url] = headings1
 
     def check_structure(self):
         headings = self.content.find_all(re.compile('^h[1-6]$'))

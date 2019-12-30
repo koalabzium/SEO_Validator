@@ -1,13 +1,13 @@
 class Result:
-    def __init__(self):
-        self.broken_urls = {} #
-        self.inbound_counter = {} #
-        self.outbound_counter = {} #
-        self.url_counter = {} #
-        self.urls_302 = {} #
-        self.http_urls = [] #
-        self.urls_missing_title = [] #
-        self.urls_wrong_chars = [] #
+    def __init__(self, starting_url, depth, config):
+        self.broken_urls = {}
+        self.inbound_counter = {}
+        self.outbound_counter = {}
+        self.url_counter = {}
+        self.urls_302 = {}
+        self.http_urls = []
+        self.urls_missing_title = []
+        self.urls_wrong_chars = []
         self.repeated_titles = {}
         self.page_missing_title = []
         self.titles_wrong_size = []
@@ -25,6 +25,45 @@ class Result:
         self.no_open_graph = []
         self.time_to_first_byte = 0
         self.fct = 0
+        self.depth = depth
+        self.starting_url = starting_url
+        self.config = config
+
+    def create_report(self):
+        for d in self.repeated_descriptions:
+            self.repeated_descriptions[d] = list(self.repeated_descriptions[d])
+        for t in self.repeated_titles:
+            self.repeated_titles[t] = list(self.repeated_titles[t])
+        return {
+                   "broken_urls": self.broken_urls,
+                   "inbound_counter": self.inbound_counter,
+                   "outbound_counter": self.outbound_counter,
+                   "url_counter": self.url_counter,
+                   "urls_302": self.urls_302,
+                   "http_urls": self.http_urls,
+                   "urls_missing_title": self.urls_missing_title,
+                   "urls_wrong_chars": self.urls_wrong_chars,
+                   "repeated_titles": self.repeated_titles,
+                   "page_missing_title": self.page_missing_title,
+                   "titles_wrong_size": self.titles_wrong_size,
+                   "description_missing": self.description_missing,
+                   "repeated_descriptions": self.repeated_descriptions,
+                   "description_wrong_size": self.description_wrong_size,
+                   "title_wrong_chars": self.title_wrong_chars,
+                   "heading_too_many": self.heading_too_many,
+                   "heading_missing": self.heading_missing,
+                   "heading_structure": self.heading_structure,
+                   "little_content": self.little_content,
+                   "missing_robots": self.missing_robots,
+                   "missing_sitemap": self.missing_sitemap,
+                   "alt_text_missing": self.alt_text_missing,
+                   "no_open_graph": self.no_open_graph,
+                   "time_to_first_byte": self.time_to_first_byte,
+                   "fct": self.fct}, {
+                   "url": self.starting_url,
+                   "depth": self.depth,
+                   "config": self.config
+               }
 
     def show(self):
         self.time_results()
@@ -81,7 +120,6 @@ class Result:
         for i in self.urls_wrong_chars:
             print(" ------> " + str(i))
 
-
     def title_results(self):
         print("")
         print("Found " + str(len(self.page_missing_title)) + " pages with missing titles: ")
@@ -137,7 +175,6 @@ class Result:
             for j in self.heading_too_many[i]:
                 print("     " + str(j))
 
-
         print("Found " + str(len(self.heading_structure)) + " pages with wrong structure of headings:")
         for i in self.heading_structure:
             print(i)
@@ -145,7 +182,8 @@ class Result:
     def content_results(self):
         print("")
         for i in self.little_content:
-            print("On page  " + str(i) + " there is too little content (" + str(self.little_content[i]) + " characters).")
+            print(
+                "On page  " + str(i) + " there is too little content (" + str(self.little_content[i]) + " characters).")
 
     def robots_results(self):
         print("")

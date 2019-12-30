@@ -12,7 +12,8 @@ from CrawlingAndValidating.OpenGraphValidator import OpenGraphValidator
 
 class ValidationFacade:
 
-    def __init__(self, content, url, starting_url, result):
+    def __init__(self, content, url, starting_url, result, config):
+        self.config = config
         self.url_validator = URLValidator(url, result)
         self.content_validator = ContentValidator(url, content, result)
         self.speed_validator = SpeedValidator(starting_url, result)
@@ -36,6 +37,7 @@ class ValidationFacade:
         self.graphics_validator.validate()
         self.open_graph_validator.validate()
         if self.url == self.staring_url:
-            # self.speed_validator.validate()
+            if self.config['measure_speed']:
+                self.speed_validator.validate()
             self.sitemap_validator.validate()
             self.robots_validator.validate()
