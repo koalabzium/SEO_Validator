@@ -83,5 +83,7 @@ if __name__ == "__main__":
     # print(response.url)
     # content = bs.BeautifulSoup(response.text, 'html5lib')
 
-    crawler = Crawler(moja, 1)
-    crawler.start()
+    # crawler = Crawler(moja, 1)
+    # crawler.start()
+
+    dict = {"place": "nana.pl", "urls": [",",""] }

@@ -19,6 +19,7 @@ class Result:
         self.heading_missing = []
         self.heading_structure = []
         self.little_content = {}
+        self.w3c = []
         self.missing_robots = False
         self.missing_sitemap = False
         self.alt_text_missing = {}
@@ -34,6 +35,11 @@ class Result:
             self.repeated_descriptions[d] = list(self.repeated_descriptions[d])
         for t in self.repeated_titles:
             self.repeated_titles[t] = list(self.repeated_titles[t])
+        result = []
+        for i in self.broken_urls:
+            result.append({"url": i, "info": self.broken_urls[i]})
+        self.broken_urls = result
+
         return {
                    "broken_urls": self.broken_urls,
                    "inbound_counter": self.inbound_counter,
@@ -41,6 +47,7 @@ class Result:
                    "url_counter": self.url_counter,
                    "urls_302": self.urls_302,
                    "http_urls": self.http_urls,
+                   "w3c": self.w3c,
                    "urls_missing_title": self.urls_missing_title,
                    "urls_wrong_chars": self.urls_wrong_chars,
                    "repeated_titles": self.repeated_titles,

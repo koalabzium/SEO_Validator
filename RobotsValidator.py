@@ -12,3 +12,5 @@ class RobotsValidator(Validator):
         response = requests.get(robots)
         if response.status_code == 404:
             self.result.missing_robots = True
+
+

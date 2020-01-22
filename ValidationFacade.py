@@ -8,6 +8,7 @@ from CrawlingAndValidating.DescriptionValidator import DescriptionValidator
 from CrawlingAndValidating.HeadingValidator import HeadingValidator
 from CrawlingAndValidating.GraphicsValidator import GraphicsValidator
 from CrawlingAndValidating.OpenGraphValidator import OpenGraphValidator
+from CrawlingAndValidating.W3CValidator import W3CValidator
 
 
 class ValidationFacade:
@@ -24,6 +25,7 @@ class ValidationFacade:
         self.heading_validator = HeadingValidator(url, content, result)
         self.graphics_validator = GraphicsValidator(url, content, result)
         self.open_graph_validator = OpenGraphValidator(url, content, result)
+        self.w3c_validator = W3CValidator(url, result)
         self.url = url
         self.staring_url = starting_url
         self.result = result
@@ -39,5 +41,7 @@ class ValidationFacade:
         if self.url == self.staring_url:
             if self.config['measure_speed']:
                 self.speed_validator.validate()
+            if self.config['w3c']:
+                self.w3c_validator.validate()
             self.sitemap_validator.validate()
             self.robots_validator.validate()
