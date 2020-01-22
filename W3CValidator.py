@@ -1,7 +1,6 @@
 from py_w3c.validators.html.validator import HTMLValidator
 from CrawlingAndValidating.Validator import Validator
 
-
 class W3CValidator(Validator):
     def __init__(self, url, result):
         self.url = url
